@@ -1,13 +1,13 @@
 variable "aws_region" {
   description = "AWS region to deploy the EKS cluster"
   type        = string
-  default     = "us-east-1"
+  default     = "ap-south-1"
 }
 
 variable "environment" {
   description = "Environment name (dev, staging, prod)"
   type        = string
-  default     = "dev"
+  default     = "main"
 }
 
 variable "cluster_name" {
@@ -19,7 +19,7 @@ variable "cluster_name" {
 variable "cluster_version" {
   description = "Kubernetes version for EKS"
   type        = string
-  default     = "1.32"
+  default     = "1.36"
 }
 
 variable "vpc_cidr" {
