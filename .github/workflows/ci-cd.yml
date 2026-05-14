@@ -163,34 +163,49 @@ jobs:
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
           timeout: "10m"
+# ==============================================================
+# STAGE 5: IaC Security Scan (Checkov)
+# ==============================================================
 
-    # ==============================================================
-  # STAGE 5: IaC Security Scan (Checkov)
-  # ==============================================================
-  iac-scan:
-    name: "🏗️ IaC Security Scan"
-    runs-on: ubuntu-latest
-    continue-on-error: true
+iac-scan:
+  name: "🏗️ IaC Security Scan"
+  runs-on: ubuntu-latest
+  continue-on-error: true
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Install Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
 
-      - name: Install Checkov
-        run: pip install checkov
+    - name: Install Checkov
+      run: |
+        python -m pip install --upgrade pip
+        pip install checkov
 
-      - name: Run Checkov Terraform Scan
-        run: |
-          checkov -d terraform --framework terraform --soft-fail
+    - name: Remove broken Checkov config files
+      run: |
+        rm -f .checkov.yml
+        rm -f .checkov.yaml
+        rm -f checkov.yml
+        rm -f checkov.yaml
 
-      - name: Run Checkov Kubernetes Scan
-        run: |
-          checkov -d k8s --framework kubernetes --soft-fail
+    - name: Run Checkov Terraform Scan
+      run: |
+        checkov -d terraform \
+        --framework terraform \
+        --soft-fail \
+        --skip-download
+
+    - name: Run Checkov Kubernetes Scan
+      run: |
+        checkov -d k8s \
+        --framework kubernetes \
+        --soft-fail \
+        --skip-download
   # ==============================================================
   # STAGE 6: Dockerfile Lint (Hadolint)
   # ==============================================================
