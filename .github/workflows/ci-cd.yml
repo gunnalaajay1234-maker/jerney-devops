@@ -165,8 +165,7 @@ jobs:
           timeout: "10m"
 
   # ==============================================================
-  #  # ==============================================================
-  # STAGE 5: IaC Security Scan (Checkov) — Terraform + K8s
+  # STAGE 5: IaC Security Scan (Checkov)
   # ==============================================================
   iac-scan:
     name: "🏗️ IaC Security Scan"
@@ -187,6 +186,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install checkov
+
+      - name: Remove Checkov config files
+        run: |
+          rm -f .checkov.yml
+          rm -f .checkov.yaml
+          rm -f checkov.yml
+          rm -f checkov.yaml
 
       - name: Run Checkov on Terraform
         run: |
