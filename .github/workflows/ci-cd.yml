@@ -3,7 +3,7 @@ GitHub Actions only accepts pure YAML code.
 
 Use this cleaned working workflow in `.github/workflows/ci-cd.yml`:
 
-```yaml
+yaml
 name: Jerney DevSecOps Pipeline
 
 on:
