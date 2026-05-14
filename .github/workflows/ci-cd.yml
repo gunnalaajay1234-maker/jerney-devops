@@ -164,10 +164,7 @@ jobs:
           severity: "CRITICAL,HIGH"
           timeout: "10m"
 
-  # ==============================================================
-  # STAGE 5: IaC Security Scan (Checkov) — Terraform + K8s
-  # ==============================================================
-    # ==============================================================
+   # ==============================================================
   # STAGE 5: IaC Security Scan (Checkov)
   # ==============================================================
   iac-scan:
@@ -180,14 +177,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Checkov Terraform Scan
-        uses: bridgecrewio/checkov-action@master
+        uses: bridgecrewio/checkov-action@v12
         with:
           directory: terraform
           framework: terraform
           soft_fail: true
 
       - name: Run Checkov Kubernetes Scan
-        uses: bridgecrewio/checkov-action@master
+        uses: bridgecrewio/checkov-action@v12
         with:
           directory: k8s
           framework: kubernetes
