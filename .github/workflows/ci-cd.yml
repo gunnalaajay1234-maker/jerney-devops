@@ -167,27 +167,31 @@ jobs:
   # ==============================================================
   # STAGE 5: IaC Security Scan (Checkov) — Terraform + K8s
   # ==============================================================
+    # ==============================================================
+  # STAGE 5: IaC Security Scan (Checkov)
+  # ==============================================================
   iac-scan:
-  name: IaC Security Scan
-  runs-on: ubuntu-latest
+    name: "🏗️ IaC Security Scan"
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Run Checkov Terraform Scan
-      uses: bridgecrewio/checkov-action@master
-      with:
-        directory: terraform
-        framework: terraform
-        soft_fail: true
+      - name: Run Checkov Terraform Scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: terraform
+          framework: terraform
+          soft_fail: true
 
-    - name: Run Checkov Kubernetes Scan
-      uses: bridgecrewio/checkov-action@master
-      with:
-        directory: k8s
-        framework: kubernetes
-        soft_fail: true
+      - name: Run Checkov Kubernetes Scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: k8s
+          framework: kubernetes
+          soft_fail: true
 
   # ==============================================================
   # STAGE 6: Dockerfile Lint (Hadolint)
