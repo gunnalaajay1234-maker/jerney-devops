@@ -1,31 +1,52 @@
-# ---- Build stage ----
-FROM node:24-alpine AS build
-WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm ci --only=production && npm cache clean --force
-
-# ---- Production stage ----
-FROM node:24-alpine AS production
-
-# Security: run as non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-# Security: remove unnecessary packages
-RUN apk --no-cache add dumb-init=1.2.5-r3
+# ================================
+# Build Stage
+# ================================
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Copy only production dependencies from build stage
-COPY --from=build /app/node_modules ./node_modules
-COPY src/ ./src/
+# Copy dependency files first
+COPY package*.json ./
 
-# Security: own files by non-root user
+# Install only production dependencies
+RUN npm ci --omit=dev \
+    && npm cache clean --force
+
+# Copy application source
+COPY src ./src
+
+# ================================
+# Production Stage
+# ================================
+FROM node:22-alpine
+
+# Install security updates + dumb-init
+RUN apk update && apk upgrade --no-cache && \
+    apk add --no-cache dumb-init
+
+# Create non-root user
+RUN addgroup -S appgroup && \
+    adduser -S appuser -G appgroup
+
+WORKDIR /app
+
+# Copy app from build stage
+COPY --from=build /app /app
+
+# Set ownership
 RUN chown -R appuser:appgroup /app
 
+# Switch to non-root user
 USER appuser
 
+# Environment
+ENV NODE_ENV=production
+
+# Expose app port
 EXPOSE 5000
 
-# Security: use dumb-init for proper signal handling (PID 1 problem)
+# Use dumb-init for signal handling
 ENTRYPOINT ["dumb-init", "--"]
+
+# Start app
 CMD ["node", "src/index.js"]
